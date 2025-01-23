@@ -49,35 +49,6 @@ public class MP1 {
 			return result;
 		}
 	}
-	
-	// function to sort hashmap by values, with tie breaker for hashmap keys, modified from: https://www.geeksforgeeks.org/sorting-a-hashmap-according-to-values/
-    public static Map<String, Integer> sortByValueOrIfTiedByKey(Map<String, Integer> hm)
-    {
-        // Create a list from elements of HashMap
-        List<Map.Entry<String, Integer> > list =
-               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet());
- 
-        // Sort the list
-        Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() {
-            public int compare(Map.Entry<String, Integer> o1, 
-                               Map.Entry<String, Integer> o2)
-            {
-                if ((o1.getValue()).compareTo(o2.getValue()) != 0) {
-					return (o1.getValue()).compareTo(o2.getValue());
-				}
-				else {
-					return (o2.getKey()).compareTo(o1.getKey());
-				}
-            }
-        });
-         
-        // put data from sorted list to hashmap 
-        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
-    }
 
     public String[] process() throws Exception{
     	String[] topItems = new String[20];
@@ -90,29 +61,17 @@ public class MP1 {
 		int lineCount = 0;
 		String[] titles = new String[50000];
 		String s = r.readLine();
-		//while(r.ready()) {
 		while(s != null) {	
-			// Testing only
-			//String s = r.readLine() + " " + lineCount;
-			//System.out.println(s);
-			
-			// Reading data using readLine and store in titles array
-			//String s = r.readLine();
 			titles[lineCount++] = s;
-			//System.out.println(titles[lineCount-1] + " " + (lineCount - 1));
-			//System.out.flush();
 			s = r.readLine();
 		}
 		r.close();
-		// System.out.println("*****************************************");
-		// System.out.println("");
+
 		Map <String, Integer> wordCounts = new HashMap<>();
 		for(int index : indexes) {
 			//tokenizing title based on delimiters
-			//System.out.println("index: " + index + " " + titles[index]);
 			//String[] words = titles[index].split(delimiters);
 			String[] words = titles[index].split("[ \t,;\\.\\?\\!\\-:@\\[\\]\\(\\)\\{\\}_*/]");
-			//String[] words = titles[index].split(Pattern.quote(delimiters));
 			//count words in the title, ignoring words in stopWordsArray
 			for(String word : words) {
 				String wordNWSLC = word.toLowerCase().replaceAll("\\s+","");
