@@ -36,20 +36,48 @@ public class MP1 {
         return ret;
     }
 	
-	// Taken directly from top solution: https://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values
+	// Taken directly from top solution (with minor modification for reverse order sort): https://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values
 	public class MapUtil {
 		public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
 			List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
 			list.sort(Collections.reverseOrder(Map.Entry.comparingByValue()));
-
 			Map<K, V> result = new LinkedHashMap<>();
 			for (Map.Entry<K, V> entry : list) {
 				result.put(entry.getKey(), entry.getValue());
 			}
 
 			return result;
+		}
+	}
+	
+	// function to sort hashmap by values, with tie breaker for hashmap keys, modified from: https://www.geeksforgeeks.org/sorting-a-hashmap-according-to-values/
+    public static Map<String, Integer> sortByValueOrIfTiedByKey(Map<String, Integer> hm)
+    {
+        // Create a list from elements of HashMap
+        List<Map.Entry<String, Integer> > list =
+               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet());
+ 
+        // Sort the list
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() {
+            public int compare(Map.Entry<String, Integer> o1, 
+                               Map.Entry<String, Integer> o2)
+            {
+                if ((o1.getValue()).compareTo(o2.getValue()) != 0) {
+					return (o1.getValue()).compareTo(o2.getValue());
+				}
+				else {
+					return (o2.getKey()).compareTo(o1.getKey());
+				}
+            }
+        });
+         
+        // put data from sorted list to hashmap 
+        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
-}
 
     public String[] process() throws Exception{
     	String[] topItems = new String[20];
@@ -102,16 +130,37 @@ public class MP1 {
 		} */
 		
 		Map<String, Integer> sortedWordCounts = MapUtil.sortByValue(wordCounts);
+		//Map<String, Integer> sortedWordCounts = sortByValueOrIfTiedByKey(wordCounts);
+		
+		Map<Integer, ArrayList<String>> sortedWordCountsInvertedMap = new TreeMap<>(Collections.reverseOrder());
+		for (Map.Entry<String, Integer> entry : sortedWordCounts.entrySet()) {
+			if(sortedWordCountsInvertedMap.containsKey(entry.getValue())) {
+					sortedWordCountsInvertedMap.get(entry.getValue()).add(entry.getKey());
+				}
+				else {
+					sortedWordCountsInvertedMap.put(entry.getValue(), new ArrayList<String>());
+					sortedWordCountsInvertedMap.get(entry.getValue()).add(entry.getKey());
+				}
+		}
 		
 		int returnCount = 0;
-		for (Map.Entry<String, Integer> entry : sortedWordCounts.entrySet()) {
+		/* for (Map.Entry<String, Integer> entry : sortedWordCounts.entrySet()) {
 			if(returnCount == 20) {
 				break;
 			}
 			//System.out.println(entry.getKey() + " " + entry.getValue());
 			topItems[returnCount++] = entry.getKey();
+		} */
+		for (Map.Entry<Integer, ArrayList<String>> entry : sortedWordCountsInvertedMap.entrySet()) {
+			Collections.sort(entry.getValue());
+			for(String word : entry.getValue()) {
+				//System.out.println(word + " " + entry.getKey());
+				topItems[returnCount++] = word;
+				if(returnCount == 20) {
+					return topItems;
+				}
+			}
 		}
-
 		return topItems;
     }
 
